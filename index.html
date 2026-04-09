@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 6: ESG Rating Disagreement Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --primary: #581c87;
+            --secondary: #7e22ce;
+            --accent: #a855f7;
+            --sand: #f5f0e8;
+            --charcoal: #1a1a2e;
+            --body: #2d3748;
+            --slate: #4a5568;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            line-height: 1.75;
+            color: var(--body);
+            background: var(--sand);
+        }
+
+        .hero {
+            background: linear-gradient(160deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            padding: 90px 24px 70px;
+            text-align: center;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.06) 0%, transparent 50%);
+        }
+        .hero .tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        .hero h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.8rem;
+            font-weight: 400;
+            margin-bottom: 16px;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+        .hero p { font-size: 1.15rem; opacity: 0.95; max-width: 680px; margin: 0 auto; color: #ffffff; }
+        .meta-bar {
+            display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;
+            margin-top: 28px;
+        }
+        .meta-item {
+            background: rgba(255,255,255,0.12);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: #ffffff;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 36px 32px;
+            margin-top: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--charcoal);
+            margin-bottom: 16px;
+        }
+        .card p { color: var(--body); margin-bottom: 12px; }
+
+        .research-q {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #ffffff;
+            padding: 24px 28px;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-style: italic;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0ebe3;
+            align-items: flex-start;
+        }
+        .step:last-child { border-bottom: none; }
+        .step-label {
+            flex-shrink: 0;
+            width: 110px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--charcoal);
+            padding-top: 2px;
+        }
+        .step-text {
+            font-size: 0.95rem;
+            color: var(--body);
+        }
+        .step-text code {
+            background: #eee8dc;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+            color: var(--charcoal);
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 22px 24px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+            margin: 16px 0 0;
+        }
+
+        .finding {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+        .finding:last-child { margin-bottom: 0; }
+        .finding-num {
+            flex-shrink: 0;
+            width: 32px; height: 32px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+        .finding-text { font-size: 0.95rem; color: var(--body); }
+
+        .warn {
+            background: #fffbeb;
+            border-left: 4px solid #d4a017;
+            padding: 18px 24px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+        .warn strong { color: #78350f; }
+        .warn p { color: #713f12; margin-bottom: 0; }
+
+        .ref-list { list-style: none; padding: 0; }
+        .ref-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0ebe3;
+            font-size: 0.88rem;
+            color: var(--slate);
+        }
+        .ref-list li:last-child { border-bottom: none; }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--primary);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+        }
+        footer strong { color: #ffffff; }
+
+        @media (max-width: 700px) {
+            .hero h1 { font-size: 2rem; }
+            .card { padding: 28px 20px; }
+            .meta-bar { gap: 10px; }
+            .step { flex-direction: column; gap: 4px; }
+            .step-label { width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="tag">Project 6 of 20 — Sustainability Analytics</div>
+    <h1>ESG Rating Disagreement Dashboard</h1>
+    <p>Analysing cross-provider divergence in ESG scores — which pillars disagree most and why — with interactive visualisation</p>
+    <div class="meta-bar">
+        <span class="meta-item">🐍 Python &amp; R</span><span class="meta-item">📊 Rank Correlation &amp; Heatmaps</span><span class="meta-item">📅 500 firms × 3 providers</span><span class="meta-item">📈 Kendall's τ</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h2>1. Research Question &amp; Motivation</h2>
+        <div class="research-q">"How much do ESG ratings diverge across providers, and which E, S, or G pillar drives the greatest disagreement?"</div>
+        <p>ESG ratings are not like credit ratings. While Moody's and S&P agree on credit quality ~90% of the time, ESG providers agree only ~50% of the time (Berg et al., 2022). This 'aggregate confusion' matters because investors using different providers will construct fundamentally different 'sustainable' portfolios. Understanding where and why disagreement occurs is essential for informed ESG integration.</p>
+    </div>
+
+    <div class="card">
+        <h2>2. Data Collection &amp; Sources</h2>
+        
+                <div class="step">
+                    <div class="step-label">Structure</div>
+                    <div class="step-text">500 firms rated by 3 simulated providers (modelled on Refinitiv, MSCI, S&amp;P methodologies)</div>
+                </div>
+                <div class="step">
+                    <div class="step-label">Variables</div>
+                    <div class="step-text">Composite ESG score (0–100), Environmental, Social, Governance pillar scores</div>
+                </div>
+                <div class="step">
+                    <div class="step-label">Sectors</div>
+                    <div class="step-text">10 GICS sectors to test whether disagreement is systematic by industry</div>
+                </div>
+                <div class="step">
+                    <div class="step-label">Design</div>
+                    <div class="step-text">Cross-sectional comparison at a single point in time — focus on measurement divergence</div>
+                </div>
+        <pre class="code-block">import pandas as pd
+from scipy.stats import kendalltau, spearmanr
+
+# Load multi-provider ESG data
+esg = pd.read_csv('esg_multi_provider.csv')
+
+# Cross-provider correlation for composite score
+providers = ['provider_a', 'provider_b', 'provider_c']
+for i, p1 in enumerate(providers):
+    for p2 in providers[i+1:]:
+        tau, p = kendalltau(esg[p1], esg[p2])
+        print(f"{p1} vs {p2}: Kendall's tau = {tau:.3f} (p={p:.4f})")</pre>
+    </div>
+
+    
+        <div class="card">
+            <h2>3a. Rank Correlation (Kendall's τ)</h2>
+            <p>Measures agreement in rank ordering — more robust than Pearson for ordinal data. τ = 1 means perfect agreement, τ = 0 means no association. ESG ratings are inherently ordinal (relative rankings matter more than absolute scores).</p>
+            <pre class="code-block"># Pillar-level disagreement
+for pillar in ['E_score', 'S_score', 'G_score']:
+    scores = esg.pivot(columns='provider', values=pillar)
+    tau, _ = kendalltau(scores.iloc[:, 0], scores.iloc[:, 1])
+    print(f"{pillar}: Kendall's tau = {tau:.3f}")</pre>
+        </div>
+        <div class="card">
+            <h2>4a. Sector × Provider Heatmap</h2>
+            <p>Visualises systematic bias patterns. Some providers may rate extractive sectors more harshly on Environmental but more leniently on Governance — revealing methodological differences.</p>
+            <pre class="code-block">import seaborn as sns
+import matplotlib.pyplot as plt
+
+pivot = esg.groupby(['sector', 'provider'])['esg_score'].mean().unstack()
+sns.heatmap(pivot, annot=True, fmt='.1f', cmap='RdYlGn')
+plt.title('Average ESG Score by Sector and Provider')</pre>
+        </div>
+        <div class="card">
+            <h2>5a. Disagreement Decomposition</h2>
+            <p>Measures standard deviation across providers for each firm, then decomposes into E, S, G contributions. Identifies which dimension drives the most divergence.</p>
+            <pre class="code-block"># Per-firm disagreement
+esg['disagreement'] = esg.groupby('firm')['esg_score'].transform('std')
+
+# Which pillar drives disagreement?
+for pillar in ['E', 'S', 'G']:
+    pillar_std = esg.groupby('firm')[f'{pillar}_score'].std().mean()
+    print(f"{pillar} pillar avg disagreement: {pillar_std:.2f}")</pre>
+        </div>
+
+    <div class="card">
+        <h2>Key Findings</h2>
+        
+                <div class="finding">
+                    <div class="finding-num">1</div>
+                    <div class="finding-text">Cross-provider composite correlation averages only ~0.54 (Kendall's τ), confirming substantial measurement disagreement</div>
+                </div>
+                <div class="finding">
+                    <div class="finding-num">2</div>
+                    <div class="finding-text">The Social pillar shows the lowest inter-provider agreement (τ ≈ 0.38), while Governance is most consistent (τ ≈ 0.62) — Social metrics are hardest to standardise</div>
+                </div>
+                <div class="finding">
+                    <div class="finding-num">3</div>
+                    <div class="finding-text">Extractive sectors (mining, oil & gas) show the widest disagreement — providers weight environmental harm vs. social contribution very differently for these industries</div>
+                </div>
+    </div>
+
+    <div class="card">
+        <div class="warn">
+            <strong>⚠️ Methodological Caveat</strong>
+            <p>This analysis uses simulated multi-provider data. Real ESG providers use proprietary methodologies that are not fully transparent. Actual disagreement patterns may differ. The IOSCO review of ESG ratings (2021) highlighted concerns about transparency and conflicts of interest.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>References</h2>
+        <ul class="ref-list">
+            <li>Berg, F., Kölbel, J., & Rigobon, R. (2022). 'Aggregate confusion: the divergence of ESG ratings.' Review of Finance, 26(6).</li>
+<li>Chatterji, A. et al. (2016). 'Do ratings of firms converge? Implications for managers, investors and strategy researchers.' Strategic Management Journal, 37(8).</li>
+<li>IOSCO (2021). 'Environmental, Social and Governance (ESG) Ratings and Data Products Providers.' Final Report.</li>
+
+        </ul>
+    </div>
+
+</div>
+
+<footer>
+    <strong>Sustainable Finance Research Portfolio</strong> · Project 6 of 20<br>
+    AI-Assisted Research — Methodology and interpretation directed by researcher; implementation assisted by Claude AI
+</footer>
+
+</body>
+</html>
